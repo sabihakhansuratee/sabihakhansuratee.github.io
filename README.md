@@ -1,43 +1,15 @@
-# Astro Starter Kit: Minimal
+# Sabiha Khan — portfolio site
 
-```sh
-npm create astro@latest -- --template minimal
+This is the code for [sabihakhansuratee.github.io](https://sabihakhansuratee.github.io).
+
+A fuller guide (replacing placeholder content, the launch checklist, etc.) will be added
+here as the site is built out. For now, three commands cover everything:
+
+```bash
+npm run dev     # preview locally at localhost:4321 — changes appear instantly
+npm run build   # check it builds cleanly before publishing
+git add -A && git commit -m "describe the change" && git push   # publish
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Any push to `main` automatically rebuilds and republishes the live site within about a
+minute — no separate deploy step needed.
