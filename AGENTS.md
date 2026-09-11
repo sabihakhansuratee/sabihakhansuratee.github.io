@@ -57,3 +57,22 @@ happens at Phase 8 handover.
 - **`scripts/make-placeholders.mjs`** (sharp-based) generates every placeholder image
   into `src/assets/media/`. Safe to re-run any time; safe to delete once real images
   have replaced every placeholder.
+- **Design direction: "Quiet Gallery Walls"**, approved in Phase 3. Tokens live in
+  `src/styles/tokens.css` (colour, type, spacing) — that's the one file to edit for a
+  visual tweak. One typeface (Archivo), self-hosted from `public/fonts/archivo/`.
+- **Any `<img>` CSS that overrides `width` must also set `height` (or use
+  `width: auto; height: auto; max-width/max-height`)**. Browsers treat an image's
+  `width`/`height` HTML attributes as low-priority presentational hints — CSS
+  `aspect-ratio: attr(...)` does NOT override a hint left unaddressed on the other
+  axis, so overriding only `width` leaves `height` pinned to the attribute's literal
+  pixel value and the image visibly stretches. Fixed once at the root in
+  `global.css`'s base `img, video` rule, but keep pairing them in any new CSS anyway.
+- **This machine's `screencapture` can't take screenshots from this terminal**
+  (macOS Screen Recording permission isn't granted to it) — visual QA needs a real
+  browser. Working method: `npm install --no-save playwright` (temporary — restore
+  `package.json`/`package-lock.json` from a backup copy afterward, don't commit it),
+  `npx playwright install chromium`, then a throwaway `.mjs` script placed at the
+  *project root* (not the scratchpad — Node resolves `node_modules` from the
+  script's own location) that launches Chromium, hits the local preview server, and
+  screenshots/evaluates the DOM. Delete the script and restore the package files
+  when done.

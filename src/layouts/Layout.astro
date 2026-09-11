@@ -1,0 +1,129 @@
+---
+import { getEntry } from 'astro:content';
+import '../styles/tokens.css';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+
+const settings = await getEntry('settings', 'site');
+if (!settings) throw new Error('Missing src/content/settings/site.json');
+const site = settings.data;
+
+const pageDescription = description ?? site.seo.defaultDescription;
+const pageTitle = title === site.name ? title : `${title} — ${site.name}`;
+
+const navLinks = [
+  { href: '/work', label: 'Work' },
+  { href: '/gallery', label: 'Gallery' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+];
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="wrap site-header__row">
+        <a class="site-header__name" href="/">{site.name}</a>
+        <nav class="site-nav" aria-label="Main">
+          {navLinks.map((link) => (
+            <a href={link.href}>{link.label}</a>
+          ))}
+        </nav>
+      </div>
+      <div class="wrap">
+        <p class="site-header__role">{site.title}</p>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap site-footer__row">
+        <p>&copy; {new Date().getFullYear()} {site.name}</p>
+        <div class="site-footer__links">
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+          {site.social.linkedin && <a href={site.social.linkedin}>LinkedIn</a>}
+        </div>
+      </div>
+    </footer>
+
+    <style>
+      .site-header {
+        padding-block: clamp(24px, 4vw, 36px) clamp(14px, 2vw, 20px);
+        border-bottom: 1px solid var(--color-hairline);
+        margin-bottom: var(--space-5);
+      }
+      .site-header__row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: var(--space-2);
+        flex-wrap: wrap;
+      }
+      .site-header__name {
+        font-weight: 800;
+        font-size: var(--text-lg);
+        letter-spacing: -0.01em;
+      }
+      .site-nav {
+        display: flex;
+        gap: clamp(16px, 3vw, 28px);
+        font-size: var(--text-sm);
+        color: var(--color-ink-soft);
+      }
+      .site-nav a:hover,
+      .site-nav a:focus-visible {
+        color: var(--color-ink);
+      }
+      .site-header__role {
+        margin: var(--space-1) 0 0;
+        color: var(--color-ink-soft);
+        font-size: var(--text-sm);
+      }
+
+      .site-footer {
+        margin-top: var(--space-6);
+        border-top: 1px solid var(--color-hairline);
+        padding-block: var(--space-4);
+      }
+      .site-footer__row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: var(--space-2);
+        flex-wrap: wrap;
+        color: var(--color-ink-soft);
+        font-size: var(--text-sm);
+      }
+      .site-footer__links {
+        display: flex;
+        gap: var(--space-3);
+      }
+      .site-footer__links a {
+        border-bottom: 1px solid var(--color-accent-soft);
+        padding-bottom: 2px;
+      }
+      .site-footer__links a:hover,
+      .site-footer__links a:focus-visible {
+        border-bottom-color: var(--color-accent);
+      }
+    </style>
+  </body>
+</html>

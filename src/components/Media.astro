@@ -1,0 +1,63 @@
+---
+// The one place image handling lives. Content frontmatter stores image
+// fields as plain path strings relative to src/assets/media/ (e.g.
+// "gallery/foo.jpg") rather than Astro's image() schema helper, because real
+// images live in one shared folder decoupled from where each content entry's
+// markdown file happens to sit — this is what lets a Pages CMS upload and a
+// hand-placed file resolve exactly the same way. This component is what
+// turns that string back into an optimised, responsive image.
+import { Picture } from 'astro:assets';
+
+interface Props {
+  path: string;
+  alt: string;
+  class?: string;
+  widths?: number[];
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+}
+
+const {
+  path,
+  alt,
+  class: className,
+  widths = [400, 800, 1200, 1600, 2000],
+  sizes = '100vw',
+  loading = 'lazy',
+  fetchpriority = 'auto',
+} = Astro.props;
+
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/media/**/*.{jpeg,jpg,png,webp,avif}'
+);
+
+const key = `/src/assets/media/${path}`;
+
+if (!images[key]) {
+  throw new Error(
+    `Media not found: "${path}" (looked for ${key}). Check the path in the content frontmatter against the actual filename in src/assets/media/.`
+  );
+}
+
+const image = await images[key]();
+
+// Never request a width larger than the source actually is — Astro's image
+// service can't (and shouldn't) upscale.
+const safeWidths = widths.filter((w) => w <= image.default.width);
+const effectiveWidths = safeWidths.length > 0 ? safeWidths : [image.default.width];
+
+const fallbackFormat = image.default.format === 'png' ? 'png' : 'jpeg';
+---
+
+<Picture
+  src={image.default}
+  alt={alt}
+  class={className}
+  widths={effectiveWidths}
+  sizes={sizes}
+  formats={['avif', 'webp']}
+  fallbackFormat={fallbackFormat}
+  loading={loading}
+  fetchpriority={fetchpriority}
+/>

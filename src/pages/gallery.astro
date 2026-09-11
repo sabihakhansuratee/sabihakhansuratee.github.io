@@ -1,0 +1,276 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Media from '../components/Media.astro';
+import { getCollection } from 'astro:content';
+
+const allItems = (await getCollection('gallery')).sort((a, b) => a.data.order - b.data.order);
+
+// Grouped by project/event, per the client's preference — not a flat stream,
+// and not an interactive filter, so there's nothing here that depends on JS
+// to be usable. A category name is missing on none of the current items, but
+// anything without one falls into a plain "Gallery" catch-all group so this
+// doesn't break the day someone adds an uncategorised item through the CMS.
+const groupOrder: string[] = [];
+const groups = new Map<string, typeof allItems>();
+for (const item of allItems) {
+  const key = item.data.category ?? 'Gallery';
+  if (!groups.has(key)) {
+    groups.set(key, []);
+    groupOrder.push(key);
+  }
+  groups.get(key)!.push(item);
+}
+
+function altFor(item: (typeof allItems)[number]) {
+  return item.data.caption ?? item.data.title;
+}
+---
+
+<Layout title="Gallery" description="Screenshots, event collateral, and social content, grouped by project.">
+  <div class="wrap gallery-intro">
+    <h1>Gallery</h1>
+    <p>Design and content work across events and programmes, grouped by project.</p>
+  </div>
+
+  {groupOrder.map((category) => (
+    <section class="wrap gallery-group">
+      <h2>{category}</h2>
+      <div class="masonry">
+        {groups.get(category)!.map((item) => {
+          const globalIndex = allItems.findIndex((i) => i.id === item.id);
+          return (
+            <button
+              type="button"
+              class="masonry__item"
+              data-lightbox-trigger
+              data-index={globalIndex}
+              aria-label={`Open larger view: ${item.data.title}`}
+            >
+              <Media
+                path={item.data.image}
+                alt={altFor(item)}
+                sizes="(min-width: 1000px) 25vw, (min-width: 640px) 33vw, 50vw"
+              />
+              {item.data.type === 'video' && (
+                <span class="play-badge" aria-hidden="true">▶</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  ))}
+
+  <dialog id="lightbox" aria-label="Gallery viewer">
+    <div class="lightbox__controls">
+      <button type="button" class="lightbox__prev" data-lightbox-prev aria-label="Previous item">‹</button>
+      <button type="button" class="lightbox__close" data-lightbox-close aria-label="Close">×</button>
+      <button type="button" class="lightbox__next" data-lightbox-next aria-label="Next item">›</button>
+    </div>
+    <div class="lightbox__stage">
+      {allItems.map((item, i) => (
+        <div class="lightbox__panel" data-panel={i} hidden={i !== 0}>
+          {item.data.type === 'video' && item.data.youtubeId ? (
+            <div class="lightbox__video-wrap">
+              <iframe
+                src={`https://www.youtube.com/embed/${item.data.youtubeId}`}
+                title={item.data.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                loading="lazy"
+              ></iframe>
+            </div>
+          ) : (
+            <Media path={item.data.image} alt={altFor(item)} sizes="90vw" loading="eager" />
+          )}
+        </div>
+      ))}
+    </div>
+    <p class="lightbox__caption" id="lightbox-caption" aria-live="polite"></p>
+  </dialog>
+
+  <script type="application/json" id="lightbox-data" set:html={JSON.stringify(
+    allItems.map((item) => ({
+      title: item.data.title,
+      client: item.data.client ?? null,
+      caption: item.data.caption ?? null,
+    }))
+  )} />
+
+  <script>
+    const dialog = document.getElementById('lightbox') as HTMLDialogElement | null;
+    const captionEl = document.getElementById('lightbox-caption');
+    const dataEl = document.getElementById('lightbox-data');
+    const triggers = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-lightbox-trigger]'));
+    const panels = Array.from(document.querySelectorAll<HTMLElement>('.lightbox__panel'));
+
+    if (dialog && captionEl && dataEl) {
+      const items = JSON.parse(dataEl.textContent || '[]') as Array<{
+        title: string;
+        client: string | null;
+        caption: string | null;
+      }>;
+
+      let currentIndex = 0;
+      let lastTrigger: HTMLElement | null = null;
+
+      function showPanel(index: number) {
+        currentIndex = ((index % panels.length) + panels.length) % panels.length;
+        for (const panel of panels) {
+          panel.hidden = Number(panel.dataset.panel) !== currentIndex;
+        }
+        const item = items[currentIndex];
+        captionEl!.textContent = [item.title, item.client].filter(Boolean).join(' · ') +
+          (item.caption ? ` — ${item.caption}` : '');
+      }
+
+      function open(index: number, trigger: HTMLElement) {
+        lastTrigger = trigger;
+        showPanel(index);
+        dialog!.showModal();
+      }
+
+      triggers.forEach((trigger) => {
+        trigger.addEventListener('click', () => {
+          open(Number(trigger.dataset.index), trigger);
+        });
+      });
+
+      dialog.querySelector('[data-lightbox-close]')?.addEventListener('click', () => dialog.close());
+      dialog.querySelector('[data-lightbox-prev]')?.addEventListener('click', () => showPanel(currentIndex - 1));
+      dialog.querySelector('[data-lightbox-next]')?.addEventListener('click', () => showPanel(currentIndex + 1));
+
+      dialog.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowLeft') showPanel(currentIndex - 1);
+        if (event.key === 'ArrowRight') showPanel(currentIndex + 1);
+      });
+
+      // Click on the backdrop (outside the content box) closes the dialog.
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+
+      dialog.addEventListener('close', () => {
+        lastTrigger?.focus();
+      });
+    }
+  </script>
+
+  <style>
+    .gallery-intro {
+      margin-bottom: var(--space-5);
+      max-width: var(--measure);
+    }
+    .gallery-intro h1 {
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      letter-spacing: -0.015em;
+      margin: 0 0 var(--space-2);
+    }
+    .gallery-intro p {
+      color: var(--color-ink-soft);
+      margin: 0;
+    }
+
+    .gallery-group {
+      margin-bottom: var(--space-6);
+    }
+    .gallery-group h2 {
+      font-size: var(--text-lg);
+      font-weight: 600;
+      margin: 0 0 var(--space-3);
+    }
+
+    .masonry {
+      columns: 2;
+      column-gap: 12px;
+    }
+    @media (min-width: 640px) {
+      .masonry { columns: 3; }
+    }
+    @media (min-width: 1000px) {
+      .masonry { columns: 4; }
+    }
+    .masonry__item {
+      display: block;
+      width: 100%;
+      margin: 0 0 12px;
+      break-inside: avoid;
+      border: 0;
+      background: none;
+      padding: 0;
+      cursor: zoom-in;
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .masonry__item :global(img) {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .play-badge {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: #fff;
+      background: rgba(23, 24, 26, 0.25);
+    }
+
+    dialog#lightbox {
+      border: 0;
+      padding: 0;
+      background: var(--color-paper);
+      max-width: min(92vw, 1100px);
+      width: 100%;
+      border-radius: var(--radius);
+    }
+    dialog#lightbox::backdrop {
+      background: rgba(23, 24, 26, 0.82);
+    }
+    .lightbox__stage {
+      padding: var(--space-3);
+    }
+    .lightbox__panel :global(img) {
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 78vh;
+      object-fit: contain;
+      margin-inline: auto;
+    }
+    .lightbox__video-wrap {
+      position: relative;
+      aspect-ratio: 16 / 9;
+    }
+    .lightbox__video-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .lightbox__controls {
+      display: flex;
+      justify-content: space-between;
+      padding: var(--space-2) var(--space-3) 0;
+    }
+    .lightbox__controls button {
+      font-size: 1.4rem;
+      line-height: 1;
+      background: none;
+      border: 0;
+      color: var(--color-ink);
+      cursor: pointer;
+      padding: var(--space-1);
+    }
+    .lightbox__caption {
+      padding: 0 var(--space-3) var(--space-3);
+      color: var(--color-ink-soft);
+      font-size: var(--text-sm);
+      margin: 0;
+    }
+  </style>
+</Layout>

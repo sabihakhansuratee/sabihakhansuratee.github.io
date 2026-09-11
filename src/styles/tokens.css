@@ -1,0 +1,87 @@
+/*
+  Design tokens — the "Quiet Gallery Walls" direction, approved in Phase 3.
+
+  This is the one file to edit for a colour or type change. Everything else in
+  the site reads from these variables rather than writing its own values, so a
+  change here reaches every page.
+*/
+
+/* ---------- Typeface ----------
+   One family (Archivo) used everywhere — headings, body, and small print —
+   with hierarchy coming from size and weight, not a second typeface.
+   Self-hosted from public/fonts/ rather than loaded from Google's CDN: it's
+   faster, more private, and doesn't break if that CDN ever has an outage.
+*/
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/archivo/archivo-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/archivo/archivo-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/archivo/archivo-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fonts/archivo/archivo-800.woff2') format('woff2');
+}
+
+:root {
+  /* ---------- Colour ----------
+     Change any of these six values to re-tint the whole site.
+  */
+  --color-paper: #f4f5f6;      /* page background */
+  --color-ink: #17181a;        /* main text */
+  --color-ink-soft: #53565c;   /* secondary text — captions, metadata, dates */
+  --color-hairline: #d8dadd;   /* thin dividing lines between sections */
+  --color-accent: #1f3a3d;     /* the one accent colour — links, focus rings */
+  --color-accent-soft: #c9d9d6;/* pale tint of the accent — underlines, tag chips */
+
+  /* ---------- Type ----------
+     Sizes flow smoothly between a phone and a desktop screen (the clamp()
+     values below) rather than jumping at fixed breakpoints.
+  */
+  --font-body: 'Archivo', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+
+  --text-sm: clamp(0.85rem, 0.8rem + 0.1vw, 0.95rem);
+  --text-base: clamp(1rem, 0.95rem + 0.15vw, 1.1rem);
+  --text-lg: clamp(1.15rem, 1.05rem + 0.3vw, 1.4rem);
+  --text-xl: clamp(1.4rem, 1.2rem + 0.8vw, 1.9rem);
+  --text-2xl: clamp(2.1rem, 1.6rem + 2vw, 3.6rem);
+
+  --leading-tight: 1.05;
+  --leading-normal: 1.5;
+
+  /* ---------- Space ----------
+     A single scale so spacing stays consistent instead of one-off pixel
+     values scattered through the CSS.
+  */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: clamp(1.75rem, 1.4rem + 1.5vw, 3rem);
+  --space-5: clamp(2.5rem, 1.8rem + 3vw, 4.5rem);
+  --space-6: clamp(3rem, 2rem + 4vw, 5.5rem);
+
+  /* ---------- Layout ---------- */
+  --content-max-width: 1160px;
+  --content-gutter: clamp(20px, 5vw, 56px);
+  --measure: 34em; /* comfortable reading width for body copy */
+
+  --radius: 2px; /* deliberately minimal — this direction has no rounded cards */
+}
