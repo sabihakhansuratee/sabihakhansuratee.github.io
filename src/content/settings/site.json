@@ -1,0 +1,15 @@
+{
+  "name": "Sabiha Khan",
+  "title": "Marketing, Design & Communications",
+  "tagline": "Design and content for events, programmes, and the people behind them.",
+  "email": "sabiha.suratee@gmail.com",
+  "social": {
+    "linkedin": "https://linkedin.com/in/sabihakhansuratee/"
+  },
+  "cvFile": "documents/cv-placeholder.pdf",
+  "seo": {
+    "defaultDescription": "Portfolio of Sabiha Khan — marketing, design, and communications for events and programmes.",
+    "ogImage": "site/og-image.jpg"
+  },
+  "launched": false
+}
