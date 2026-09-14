@@ -1,7 +1,7 @@
 ---
 title: About
 headshot: /IMG_0139.jpeg
-cvFile: documents/cv-placeholder.pdf
+cvFile: documents/SabihaCV2026.pdf
 career:
   - role: Senior Executive, Marketing Communications & Stakeholder Engagement
     org: Duke-NUS Medical School, Centre of Regulatory Excellence (CoRE)

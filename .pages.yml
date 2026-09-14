@@ -245,10 +245,6 @@ content:
             label: LinkedIn URL
             type: string
             description: "Your full LinkedIn profile URL, e.g. https://linkedin.com/in/yourname/."
-      - name: cvFile
-        label: CV file path
-        type: string
-        description: "Set automatically when you upload a CV on the About page — you shouldn't normally need to edit this directly."
       - name: seo
         label: Search & sharing
         type: object

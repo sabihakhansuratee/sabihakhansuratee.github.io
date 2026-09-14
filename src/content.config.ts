@@ -89,7 +89,6 @@ const settings = defineCollection({
     social: z.object({
       linkedin: z.string().optional(),
     }),
-    cvFile: z.string(),
     seo: z.object({
       defaultDescription: z.string(),
       ogImage: z.string().optional(),
