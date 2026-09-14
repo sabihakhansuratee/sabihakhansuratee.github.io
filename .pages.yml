@@ -227,6 +227,11 @@ content:
         type: text
         required: true
         description: "The large headline on the home page. One confident sentence about what you do."
+      - name: homeSubtitle
+        label: Homepage subtitle
+        type: text
+        required: true
+        description: "The smaller line of text just under the headline on the home page."
       - name: email
         label: Contact email
         type: string

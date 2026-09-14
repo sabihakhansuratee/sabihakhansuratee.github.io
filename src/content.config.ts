@@ -84,6 +84,7 @@ const settings = defineCollection({
     name: z.string(),
     title: z.string(),
     tagline: z.string(),
+    homeSubtitle: z.string(),
     email: z.string(),
     social: z.object({
       linkedin: z.string().optional(),

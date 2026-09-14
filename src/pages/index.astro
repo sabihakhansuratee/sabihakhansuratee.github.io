@@ -19,7 +19,7 @@ const galleryStrip = (await getCollection('gallery')).sort((a, b) => a.data.orde
 <Layout title={site.name} description={site.tagline}>
   <div class="wrap hero-intro">
     <h1>{site.tagline}</h1>
-    <p>Based in Singapore — design and content for international regulatory, academic, and health programmes.</p>
+    <p>{site.homeSubtitle}</p>
   </div>
 
   {heroCaseStudy && (
