@@ -103,6 +103,26 @@ happens at Phase 8 handover.
   (or the Actions tab) for a failed run on the latest commit; the fix is just
   triggering one more clean deploy — either an empty commit
   (`git commit --allow-empty`) or re-running the failed job from GitHub's UI.
+- **There are two places the CV file could theoretically be configured, but
+  only one is real.** The About page entry (`src/content/pages/about.md`,
+  `cvFile`) drives the actual "Download CV" button. A duplicate `cvFile` field
+  used to exist on `settings`/`site.json` too, left over from an early Phase 2
+  draft — it was never wired to anything, but its CMS description made it
+  *sound* like the right place to edit, and the client understandably edited
+  it, then found downloading the CV still served the old file. Removed the
+  dead field entirely (schema, `site.json`, `.pages.yml`) rather than trying
+  to keep two fields in sync — if a field isn't consumed by any template,
+  delete it, don't leave it looking legitimate in the CMS.
+- **Git history was rewritten once, 2026-09-14**, to strip a since-replaced
+  version of the client's CV that briefly contained her phone number
+  (uploaded through the CMS, caught, replaced with a clean version, then the
+  old blob was purged from history with `git filter-repo
+  --strip-blobs-with-ids` and force-pushed — done with the client's explicit
+  go-ahead). Commit hashes before `0ac71cf` on `main` no longer match what a
+  pre-existing local clone would have. Not expected to matter again, but if a
+  future session's local `git log` looks like it diverges oddly from
+  `origin/main` around that date, this is why — `git fetch && git reset --hard
+  origin/main` is the fix, same as after any rewrite.
 - **This machine's `screencapture` can't take screenshots from this terminal**
   (macOS Screen Recording permission isn't granted to it) — visual QA needs a real
   browser. Working method: `npm install --no-save playwright` (temporary — restore
