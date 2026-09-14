@@ -1,7 +1,7 @@
 # Progress — where we left off
 
-Last updated: 2026-09-14. Read this first when resuming, alongside `PLAN.md`
-(the full brief) and `docs/brief.md` (Phase 0 interview answers).
+Last updated: 2026-09-14 (evening). Read this first when resuming, alongside
+`PLAN.md` (the full brief) and `docs/brief.md` (Phase 0 interview answers).
 
 ## Done
 
@@ -9,72 +9,105 @@ Last updated: 2026-09-14. Read this first when resuming, alongside `PLAN.md`
 - **Phase 1 — Pipeline.** Astro site scaffolded, deploying via GitHub Actions to
   `https://sabihakhansuratee.github.io` on every push to `main`. Confirmed live.
 - **Phase 2 — Content model.** `src/content.config.ts` defines four collections
-  (case studies, gallery, pages, settings). Placeholder content written: 4 case
-  studies, 12 gallery items, About page (using the client's **real** bio/CV, not
-  fictional), `site.json` settings. 26 placeholder images generated via
-  `scripts/make-placeholders.mjs`. Confirmed.
-- **Phase 3 — Design.** Direction chosen: **"Quiet Gallery Walls"** (calm neutrals,
-  one typeface — Archivo, images unboxed and full-width, restrained teal accent).
-  Confirmed multi-page site structure (not a single-page scroller). Full palette/
-  type/layout spec is in `AGENTS.md`'s decisions log and `src/styles/tokens.css`.
-- **Phase 4 — Build. Complete.**
-  - Base layout (`src/layouts/Layout.astro`), design tokens (`src/styles/tokens.css`),
-    global reset (`src/styles/global.css`), self-hosted Archivo font files
-    (`public/fonts/archivo/`), and the shared image component
-    (`src/components/Media.astro`, resolving `src/assets/media/` path strings to
-    optimised, responsive `<Picture>` output).
-  - **Gallery** (`/gallery`) — confirmed working by the client. Fixed a real
-    width/height CSS bug along the way (see `AGENTS.md` — any `<img>` CSS that
-    overrides `width` must also set `height`, or images stretch).
-  - **Case study index and detail** (`/work`, `/work/[slug]`) — confirmed working
-    by the client. Results render from the frontmatter `results` field only.
-  - **About** (`/about`) and **Contact** (`/contact`) — built, verified with
-    screenshots, CV download link confirmed resolving. Not yet explicitly
-    reviewed by the client (nothing flagged, but wasn't a separate STOP point).
-  - **Home** (`/`) and **404** — built. Fixed a flexbox bug on the home page's
-    featured-work rows (long title pushed the year label onto a misaligned new
-    line — needed `min-width: 0` on the flex child). Verified with screenshots,
-    desktop and mobile.
-  - Nav/heading renamed from "Work" to **"My Work"** per the client's request.
-  - **Visual QA method for this project**: this machine's `screencapture` can't
-    take screenshots from this terminal (no Screen Recording permission granted
-    to it), so every page was checked with a temporarily-installed Playwright
-    instance instead — see the detailed recipe in `AGENTS.md`. Two real bugs
-    were caught this way that would NOT have been caught by `npm run build`
-    alone (the width/height stretch bug, and the flexbox min-width bug) — worth
-    continuing to do this for any further visual changes, not just trusting a
-    clean build.
+  (case studies, gallery, pages, settings). Confirmed.
+- **Phase 3 — Design.** Direction: **"Quiet Gallery Walls"**. Confirmed multi-page
+  site structure. Full spec in `AGENTS.md`'s decisions log and `src/styles/tokens.css`.
+- **Phase 4 — Build. Complete.** Every page built (Home, My Work index + detail,
+  Gallery, About, Contact, 404), confirmed by the client. Two real CSS bugs were
+  found and fixed post-launch-of-this-phase (see "Real bugs found" below).
+- **Phase 5 — Pages CMS. Connected and tested successfully.**
+  - `.pages.yml` written: all four collections + settings mapped, media output
+    aligned with `Media.astro`'s resolver, plain-language `description` text on
+    every field. Gallery `category` deliberately kept as plain text rather than
+    a select list — reasoning logged in `AGENTS.md`.
+  - Client signed into `app.pagescms.org` with GitHub, authorized the one repo,
+    connected successfully — the config parsed with no errors on first real test.
+  - **Client has now published multiple real, unaided edits through the CMS**,
+    each confirmed live on the real site — this satisfies PLAN.md's Phase 5 STOP
+    ("the client must successfully publish a change through the CMS, unaided").
+    Specifically: rewrote a case study into real content (the "Halyard" entry is
+    now "CoRE Scientific Conference" — real, not placeholder), added a real
+    YouTube video to a gallery entry, uploaded her real headshot to the About page.
 
-**All of Phase 4 is built.** The client has explicitly confirmed the gallery and
-case study pages (the two PLAN.md calls out as the most important). About, Contact,
-Home, and 404 are built and self-verified but not yet explicitly walked through
-with the client — worth a quick "does this all still look right to you" pass
-before moving on, though nothing is blocking.
+### Real bugs the client's testing caught (all fixed and deployed)
 
-## Not started yet
+1. **Gallery strip images distorted on the home page.** A "fixed height, auto
+   width" flexbox pattern doesn't reliably size from an image's real aspect
+   ratio in this project's combination of flexbox + responsive `sizes` +
+   `aspect-ratio`. Fixed by giving `Media.astro` an explicit `height` prop that
+   computes the real pixel width server-side and sets both dimensions via
+   inline style (the one thing that reliably beats every external stylesheet
+   rule, including our own `img { height: auto; max-width: 100% }` reset).
+2. **CMS media paths broke the build.** Pages CMS writes image/file paths with
+   a leading slash (root-relative), but `Media.astro`'s resolver expected a
+   path with no prefix, relative to `src/assets/media/` directly. This broke
+   the client's very first real CMS edit — safely (a failed build just means
+   the live site stays on the last good version, nothing was ever visibly
+   broken) but it needed fixing. Fixed by stripping a leading slash before
+   resolution, in `Media.astro` and the About page's CV link.
+3. **Homepage subtitle wasn't connected to the CMS at all** — it was a
+   hardcoded string in `index.astro`. The client found this by looking for a
+   way to edit it and not finding one. Added as a proper `homeSubtitle` field
+   on settings, wired through the schema, the template, and `.pages.yml`.
+4. **Two rapid CMS saves can fail one GitHub Pages deploy** (a 409-style
+   conflict — the build succeeds, only the deploy step fails, and it doesn't
+   queue politely the way you'd hope). Not a content bug. Recognized and fixed
+   live by pushing an empty commit to trigger one clean deploy. Documented in
+   `AGENTS.md` so this is recognized quickly if it recurs, rather than
+   mistaken for something being broken.
 
-- **Phase 5 — Pages CMS wiring.** `.pages.yml`, media path alignment (this is
-  the phase PLAN.md calls "the whole ballgame" — check pagescms.org's current
-  schema rather than working from memory), then a real test where the client
-  replaces content through the CMS herself while being watched.
-- **Phase 6 — Polish.** Contact form decision (mailto is already in place and
-  matches the plan's first preference — probably nothing more to do here unless
-  the client asks for a real form), SEO/OG tags, sitemap, robots.txt, JSON-LD,
-  performance pass (Lighthouse), accessibility pass, favicon/touch icons, print
-  stylesheet, and — important — the **placeholder guards**: `launched: false`
-  flag already exists in `site.json` but the actual noindex/banner/
-  `check:placeholders` script behavior described in PLAN.md hasn't been built yet.
+All four are documented in detail in `AGENTS.md`'s decisions log.
+
+## Content status (as of now)
+
+- **Case studies:** "Halyard Regulatory Fellows Programme" has been replaced by
+  the client with her real first case study ("CoRE Scientific Conference",
+  `placeholder: false`). The other three (Meridian, Northwind, Solstice) are
+  still the original invented placeholders.
+- **Gallery:** one entry (originally "Halyard Fellows completion certificate")
+  has been replaced with a real YouTube video ("CoRE 10th Anniversary") — note
+  its `placeholder` flag is still `true` even though the content is real; worth
+  the client flipping that when she's next in the CMS. Its thumbnail is still
+  the old placeholder graphic (she swapped in a video, not a new poster image).
+  The other eleven gallery entries are still original placeholders.
+- **About page:** real bio (already was, since Phase 2), now also has the
+  client's real headshot (was a placeholder image before today).
+- **Settings:** real name/email/LinkedIn (since Phase 2); homepage tagline and
+  subtitle have been lightly edited by the client through the CMS.
+
+## Next up
+
+- **Phase 6 — Polish.** Not started. This covers:
+  - Contact: mailto + LinkedIn is already in place (the plan's first
+    preference) — probably nothing more needed here unless the client wants a
+    real form later.
+  - SEO/OG tags per page, `@astrojs/sitemap`, `robots.txt`, JSON-LD `Person`
+    schema on the home page.
+  - Performance pass (Lighthouse) and a plain-language report to the client.
+  - Accessibility pass: keyboard nav including the lightbox, heading order,
+    contrast, images-disabled test.
+  - Favicon, Apple touch icon, print stylesheet for case study pages.
+  - Cross-browser / real-phone check.
+  - **Placeholder guards** — not built yet: `launched: false` already exists in
+    `site.json`, but the actual noindex meta tag + robots.txt block, the
+    dev-only "not live yet" banner, and the `npm run check:placeholders` script
+    described in PLAN.md all still need building.
 - **Phase 7 — Custom domain.** Client said "later," not now.
-- **Phase 8 — Handover docs.** Full `CLAUDE.md` architecture writeup and the
-  client-facing `README.md` walkthrough (placeholder-replacement steps with
-  CMS screenshots, launch checklist, etc.) — write this last, once the CMS
-  (Phase 5) actually exists to document.
+- **Phase 8 — Handover docs.** Full `CLAUDE.md` architecture writeup (note:
+  this project actually uses `AGENTS.md`, symlinked as `CLAUDE.md` — see that
+  file's growing decisions log, which already covers most of what Phase 8
+  wants) and the client-facing `README.md` walkthrough (placeholder-replacement
+  steps with CMS screenshots, launch checklist). Write this last.
 
 ## Known open items (not blocking, just tracked)
 
-- The downloadable CV on the About page is still a placeholder PDF
-  (`public/documents/cv-placeholder.pdf`) — the client's real CV has a phone number
-  that shouldn't be public. She needs to prepare a redacted version before launch.
-- The one video gallery item (`northwind-symposium-recap-video.md`) has a fake
-  `youtubeId: "placeholder-000000"` that won't actually embed — expected, swap in
-  a real ID when the client has one.
+- The downloadable CV on the About page is still a placeholder PDF — the
+  client's real CV has a phone number that shouldn't be public. She needs to
+  prepare a redacted version and upload it through the CMS (Prose pages →
+  About → CV file) before launch.
+- The "CoRE 10th Anniversary" gallery video's `placeholder` flag is still
+  `true` despite being real content — a one-toggle fix whenever she's next in
+  the CMS.
+- Three of four case studies and eleven of twelve gallery items are still
+  invented placeholder content, same as at the end of Phase 2 — expected,
+  this happens on the client's own schedule per PLAN.md Section 4.
