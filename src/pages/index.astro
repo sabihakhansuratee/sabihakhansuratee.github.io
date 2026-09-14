@@ -1,17 +1,221 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import Media from '../components/Media.astro';
+import { getCollection, getEntry } from 'astro:content';
 
+const settings = await getEntry('settings', 'site');
+if (!settings) throw new Error('Missing src/content/settings/site.json');
+const site = settings.data;
+
+const featured = (await getCollection('caseStudies', ({ data }) => data.featured && !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const heroCaseStudy = featured[0];
+
+const galleryStrip = (await getCollection('gallery')).sort((a, b) => a.data.order - b.data.order).slice(0, 6);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Sabiha Khan</title>
-	</head>
-	<body>
-		<h1>Sabiha Khan</h1>
-	</body>
-</html>
+<Layout title={site.name} description={site.tagline}>
+  <div class="wrap hero-intro">
+    <h1>{site.tagline}</h1>
+    <p>Based in Singapore — design and content for international regulatory, academic, and health programmes.</p>
+  </div>
+
+  {heroCaseStudy && (
+    <div class="wrap">
+      <a href={`/work/${heroCaseStudy.id}/`}>
+        <Media
+          path={heroCaseStudy.data.coverImage}
+          alt={`Cover image for ${heroCaseStudy.data.title}`}
+          sizes="100vw"
+          loading="eager"
+          class="hero-image"
+        />
+      </a>
+    </div>
+  )}
+
+  <div class="wrap">
+    <section class="block">
+      <p class="section-label">Selected work</p>
+      <div class="work-list">
+        {featured.map((entry) => (
+          <a class="work-item" href={`/work/${entry.id}/`}>
+            <Media
+              path={entry.data.coverImage}
+              alt={`Cover image for ${entry.data.title}`}
+              sizes="(min-width: 700px) 50vw, 100vw"
+            />
+            <div class="work-meta">
+              <div class="work-meta__text">
+                <p class="work-title">{entry.data.title}</p>
+                <p class="work-sub">{entry.data.summary}</p>
+              </div>
+              <p class="work-year">{entry.data.year}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="block">
+      <p class="section-label">From the gallery</p>
+      <div class="gallery-strip">
+        {galleryStrip.map((item) => (
+          <Media
+            path={item.data.image}
+            alt={item.data.caption ?? item.data.title}
+            sizes="300px"
+          />
+        ))}
+      </div>
+      <a class="view-all" href="/gallery">View the full gallery</a>
+    </section>
+
+    <section class="cta">
+      <h2>Let's talk.</h2>
+      <p>Open to hearing from recruiters, prospective employers, and anyone with a project to discuss.</p>
+      <a class="cta__button" href="/contact">Get in touch</a>
+    </section>
+  </div>
+
+  <style>
+    .hero-intro {
+      padding-block: clamp(8px, 3vw, 20px) clamp(28px, 5vw, 48px);
+      max-width: 640px;
+    }
+    .hero-intro h1 {
+      font-weight: 800;
+      font-size: var(--text-2xl);
+      line-height: var(--leading-tight);
+      letter-spacing: -0.015em;
+      margin: 0 0 0.4em;
+      text-wrap: balance;
+    }
+    .hero-intro p {
+      font-size: var(--text-lg);
+      color: var(--color-ink-soft);
+      line-height: var(--leading-normal);
+      margin: 0;
+      max-width: var(--measure);
+    }
+    :global(.hero-image) {
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius);
+    }
+
+    .block {
+      padding-block: var(--space-5);
+    }
+    .block + .block {
+      border-top: 1px solid var(--color-hairline);
+    }
+    .section-label {
+      font-size: var(--text-sm);
+      color: var(--color-ink-soft);
+      margin: 0 0 var(--space-4);
+      font-weight: 500;
+    }
+
+    .work-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+    .work-item {
+      display: grid;
+      gap: var(--space-2);
+    }
+    .work-item :global(img) {
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius);
+    }
+    .work-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: var(--space-2);
+    }
+    .work-meta__text {
+      min-width: 0;
+    }
+    .work-title {
+      font-size: var(--text-lg);
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      margin: 0;
+    }
+    .work-item:hover .work-title,
+    .work-item:focus-visible .work-title {
+      color: var(--color-accent);
+    }
+    .work-sub {
+      color: var(--color-ink-soft);
+      font-size: var(--text-sm);
+      margin: 4px 0 0;
+      max-width: 45ch;
+    }
+    .work-year {
+      color: var(--color-ink-soft);
+      font-size: var(--text-sm);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .gallery-strip {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      height: clamp(140px, 24vw, 230px);
+    }
+    .gallery-strip :global(img) {
+      height: 100%;
+      width: auto;
+      flex-shrink: 0;
+      border-radius: var(--radius);
+    }
+
+    .view-all {
+      display: inline-block;
+      margin-top: var(--space-3);
+      font-size: var(--text-sm);
+      color: var(--color-accent);
+      border-bottom: 1px solid var(--color-accent-soft);
+      padding-bottom: 2px;
+    }
+    .view-all:hover,
+    .view-all:focus-visible {
+      border-bottom-color: var(--color-accent);
+    }
+
+    .cta h2 {
+      font-size: var(--text-xl);
+      font-weight: 800;
+      margin: 0 0 var(--space-2);
+      letter-spacing: -0.01em;
+    }
+    .cta p {
+      color: var(--color-ink-soft);
+      max-width: var(--measure);
+      margin: 0 0 var(--space-3);
+    }
+    .cta__button {
+      display: inline-block;
+      padding: 0.6em 1.2em;
+      border: 1px solid var(--color-ink);
+      border-radius: var(--radius);
+      font-size: var(--text-sm);
+      font-weight: 500;
+    }
+    .cta__button:hover,
+    .cta__button:focus-visible {
+      background: var(--color-ink);
+      color: var(--color-paper);
+    }
+  </style>
+</Layout>

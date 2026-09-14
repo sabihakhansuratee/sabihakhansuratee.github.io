@@ -1,0 +1,42 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Page not found">
+  <div class="wrap not-found">
+    <h1>Page not found</h1>
+    <p>That page doesn't exist, or may have moved.</p>
+    <a class="not-found__link" href="/">Back to the home page</a>
+  </div>
+
+  <style>
+    .not-found {
+      padding-block: clamp(var(--space-5), 12vw, var(--space-6));
+      max-width: var(--measure);
+    }
+    .not-found h1 {
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      letter-spacing: -0.015em;
+      margin: 0 0 var(--space-2);
+    }
+    .not-found p {
+      color: var(--color-ink-soft);
+      font-size: var(--text-lg);
+      margin: 0 0 var(--space-4);
+    }
+    .not-found__link {
+      display: inline-block;
+      padding: 0.6em 1.2em;
+      border: 1px solid var(--color-ink);
+      border-radius: var(--radius);
+      font-size: var(--text-sm);
+      font-weight: 500;
+    }
+    .not-found__link:hover,
+    .not-found__link:focus-visible {
+      background: var(--color-ink);
+      color: var(--color-paper);
+    }
+  </style>
+</Layout>
