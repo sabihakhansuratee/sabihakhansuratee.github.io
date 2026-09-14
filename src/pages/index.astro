@@ -66,7 +66,7 @@ const galleryStrip = (await getCollection('gallery')).sort((a, b) => a.data.orde
           <Media
             path={item.data.image}
             alt={item.data.caption ?? item.data.title}
-            sizes="300px"
+            height={200}
           />
         ))}
       </div>
@@ -171,11 +171,10 @@ const galleryStrip = (await getCollection('gallery')).sort((a, b) => a.data.orde
       gap: 10px;
       overflow-x: auto;
       padding-bottom: 6px;
-      height: clamp(140px, 24vw, 230px);
     }
     .gallery-strip :global(img) {
-      height: 100%;
-      width: auto;
+      /* Width and height come as explicit pixel attributes from Media.astro
+         (via its `height` prop) — not set here, and deliberately not `auto`. */
       flex-shrink: 0;
       border-radius: var(--radius);
     }

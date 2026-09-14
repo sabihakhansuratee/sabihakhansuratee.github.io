@@ -16,6 +16,16 @@ interface Props {
   sizes?: string;
   loading?: 'lazy' | 'eager';
   fetchpriority?: 'high' | 'low' | 'auto';
+  /**
+   * Use for a fixed-size thumbnail (e.g. a row of images sharing one exact
+   * height, like a horizontal strip) instead of a fluid, viewport-relative
+   * image. Renders at exactly this pixel height, with width computed from
+   * the source's real aspect ratio — explicit pixels, not `width: auto`.
+   * Combining `sizes`-based responsive width selection with flexbox
+   * auto-width-from-aspect-ratio does not reliably size correctly, so this
+   * path avoids that combination entirely rather than fighting it in CSS.
+   */
+  height?: number;
 }
 
 const {
@@ -26,6 +36,7 @@ const {
   sizes = '100vw',
   loading = 'lazy',
   fetchpriority = 'auto',
+  height: fixedHeight,
 } = Astro.props;
 
 const images = import.meta.glob<{ default: ImageMetadata }>(
@@ -48,16 +59,55 @@ const safeWidths = widths.filter((w) => w <= image.default.width);
 const effectiveWidths = safeWidths.length > 0 ? safeWidths : [image.default.width];
 
 const fallbackFormat = image.default.format === 'png' ? 'png' : 'jpeg';
+
+// Explicit aspect-ratio, not just width/height attributes. Browsers treat
+// width/height attributes as low-priority presentational hints, and in some
+// layout contexts they don't reliably fall back to the image's real
+// intrinsic ratio — the box can end up an arbitrary, wrong size. Setting
+// aspect-ratio directly from the actual pixel dimensions avoids that.
+const aspectRatio = `${image.default.width} / ${image.default.height}`;
+
+const fixedWidth = fixedHeight
+  ? Math.round(fixedHeight * (image.default.width / image.default.height))
+  : undefined;
+
+// For the fixed-height case, width/height are also set inline (not just as
+// HTML attributes) because inline style is the one thing guaranteed to beat
+// every external stylesheet rule in the cascade — including this project's
+// own global `img { height: auto }` reset, which would otherwise silently
+// win over the plain width/height attributes and shrink the image back down.
+// max-width: none is needed too, separately — global.css's `max-width: 100%`
+// isn't overridden by setting `width`, since max-width and width are
+// different properties and max-width always wins when they'd conflict.
 ---
 
-<Picture
-  src={image.default}
-  alt={alt}
-  class={className}
-  widths={effectiveWidths}
-  sizes={sizes}
-  formats={['avif', 'webp']}
-  fallbackFormat={fallbackFormat}
-  loading={loading}
-  fetchpriority={fetchpriority}
-/>
+{
+  fixedHeight ? (
+    <Picture
+      src={image.default}
+      alt={alt}
+      class={className}
+      width={fixedWidth}
+      height={fixedHeight}
+      densities={[1, 2]}
+      formats={['avif', 'webp']}
+      fallbackFormat={fallbackFormat}
+      loading={loading}
+      fetchpriority={fetchpriority}
+      style={`aspect-ratio: ${aspectRatio}; width: ${fixedWidth}px; height: ${fixedHeight}px; max-width: none;`}
+    />
+  ) : (
+    <Picture
+      src={image.default}
+      alt={alt}
+      class={className}
+      widths={effectiveWidths}
+      sizes={sizes}
+      formats={['avif', 'webp']}
+      fallbackFormat={fallbackFormat}
+      loading={loading}
+      fetchpriority={fetchpriority}
+      style={`aspect-ratio: ${aspectRatio};`}
+    />
+  )
+}
