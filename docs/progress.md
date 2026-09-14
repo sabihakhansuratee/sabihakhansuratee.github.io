@@ -1,6 +1,6 @@
 # Progress — where we left off
 
-Last updated: 2026-09-14 (evening). Read this first when resuming, alongside
+Last updated: 2026-09-14 (late evening). Read this first when resuming, alongside
 `PLAN.md` (the full brief) and `docs/brief.md` (Phase 0 interview answers).
 
 ## Done
@@ -27,7 +27,9 @@ Last updated: 2026-09-14 (evening). Read this first when resuming, alongside
     ("the client must successfully publish a change through the CMS, unaided").
     Specifically: rewrote a case study into real content (the "Halyard" entry is
     now "CoRE Scientific Conference" — real, not placeholder), added a real
-    YouTube video to a gallery entry, uploaded her real headshot to the About page.
+    YouTube video to a gallery entry, uploaded her real headshot to the About page,
+    and uploaded her real CV (`SabihaCV2026.pdf`) — the About page's "Download CV"
+    button now serves it.
 
 ### Real bugs the client's testing caught (all fixed and deployed)
 
@@ -55,8 +57,30 @@ Last updated: 2026-09-14 (evening). Read this first when resuming, alongside
    live by pushing an empty commit to trigger one clean deploy. Documented in
    `AGENTS.md` so this is recognized quickly if it recurs, rather than
    mistaken for something being broken.
+5. **CV download served the wrong file.** There were two separate "CV file"
+   fields — one on the About page entry (the one actually wired to the
+   download button) and an unused duplicate on Site settings, left over from
+   an early Phase 2 draft. The duplicate's CMS description even made it sound
+   like the field to leave alone/auto-managed, which is exactly why the client
+   reasonably edited it and nothing happened. Fixed by deleting the dead field
+   entirely (schema, `site.json`, `.pages.yml`) rather than trying to keep two
+   fields in sync, and pointing the real field at her uploaded CV.
 
-All four are documented in detail in `AGENTS.md`'s decisions log.
+All five are documented in detail in `AGENTS.md`'s decisions log.
+
+### Privacy incident, caught and resolved
+
+The client's first CV upload briefly contained her phone number (the same
+concern flagged back in Phase 0). Caught before it was wired up anywhere
+visible, she re-uploaded a redacted version, and — with her explicit
+go-ahead — the old version was fully purged from the git history (not just
+overwritten) using `git filter-repo --strip-blobs-with-ids`, then
+force-pushed. Verified the sensitive blob is unreachable and the live site
+still builds and deploys correctly afterward. Full details in `AGENTS.md`.
+One side effect: commit hashes on `main` before `0ac71cf` no longer match
+any pre-existing local clone — if a future session's `git log` looks like it
+diverges oddly from `origin/main`, that's why; `git fetch && git reset --hard
+origin/main` resolves it, same as after any history rewrite.
 
 ## Content status (as of now)
 
@@ -70,8 +94,8 @@ All four are documented in detail in `AGENTS.md`'s decisions log.
   the client flipping that when she's next in the CMS. Its thumbnail is still
   the old placeholder graphic (she swapped in a video, not a new poster image).
   The other eleven gallery entries are still original placeholders.
-- **About page:** real bio (already was, since Phase 2), now also has the
-  client's real headshot (was a placeholder image before today).
+- **About page:** real bio (already was, since Phase 2), real headshot, and
+  real CV download — all client-uploaded today, all confirmed live.
 - **Settings:** real name/email/LinkedIn (since Phase 2); homepage tagline and
   subtitle have been lightly edited by the client through the CMS.
 
@@ -101,10 +125,6 @@ All four are documented in detail in `AGENTS.md`'s decisions log.
 
 ## Known open items (not blocking, just tracked)
 
-- The downloadable CV on the About page is still a placeholder PDF — the
-  client's real CV has a phone number that shouldn't be public. She needs to
-  prepare a redacted version and upload it through the CMS (Prose pages →
-  About → CV file) before launch.
 - The "CoRE 10th Anniversary" gallery video's `placeholder` flag is still
   `true` despite being real content — a one-toggle fix whenever she's next in
   the CMS.
