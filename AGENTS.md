@@ -95,6 +95,14 @@ happens at Phase 8 handover.
   and the gallery/home page grouping logic to resolve a reference instead of
   a plain string — worth doing later if mis-typed categories become a real
   problem, not before.
+- **Two CMS saves in quick succession can cause one GitHub Pages deploy to
+  fail outright** (a 409-style conflict, not a build/content problem — the
+  build step itself succeeds, only the deploy step fails) rather than
+  queueing politely. If a change doesn't appear live after a minute or two,
+  check `gh api repos/sabihakhansuratee/sabihakhansuratee.github.io/actions/runs`
+  (or the Actions tab) for a failed run on the latest commit; the fix is just
+  triggering one more clean deploy — either an empty commit
+  (`git commit --allow-empty`) or re-running the failed job from GitHub's UI.
 - **This machine's `screencapture` can't take screenshots from this terminal**
   (macOS Screen Recording permission isn't granted to it) — visual QA needs a real
   browser. Working method: `npm install --no-save playwright` (temporary — restore
