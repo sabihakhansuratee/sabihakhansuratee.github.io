@@ -43,7 +43,11 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
   '/src/assets/media/**/*.{jpeg,jpg,png,webp,avif}'
 );
 
-const key = `/src/assets/media/${path}`;
+// Pages CMS (and possibly a human editing frontmatter by hand) may write this
+// path with a leading slash, treating it as root-relative the way a normal
+// public/ asset URL would be — strip it so both conventions resolve the same.
+const normalizedPath = path.replace(/^\/+/, '');
+const key = `/src/assets/media/${normalizedPath}`;
 
 if (!images[key]) {
   throw new Error(

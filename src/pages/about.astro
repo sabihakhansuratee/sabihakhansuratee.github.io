@@ -6,6 +6,10 @@ import { getEntry, render } from 'astro:content';
 const entry = await getEntry('pages', 'about');
 if (!entry) throw new Error('Missing src/content/pages/about.md');
 const { Content } = await render(entry);
+
+// Same leading-slash defensiveness as Media.astro — Pages CMS may write this
+// path already root-relative.
+const cvHref = entry.data.cvFile ? `/${entry.data.cvFile.replace(/^\/+/, '')}` : null;
 ---
 
 <Layout title="About" description="About Sabiha Khan.">
@@ -25,8 +29,8 @@ const { Content } = await render(entry);
         <div class="about__body">
           <Content />
         </div>
-        {entry.data.cvFile && (
-          <a class="about__cv" href={`/${entry.data.cvFile}`} download>
+        {cvHref && (
+          <a class="about__cv" href={cvHref} download>
             Download CV
           </a>
         )}
