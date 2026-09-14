@@ -19,7 +19,7 @@ content:
     filename: "{primary}.md"
     view:
       primary: title
-      fields: [client, year, featured, draft, placeholder]
+      fields: [title, client, year, featured, draft, placeholder]
       sort: order
     fields:
       - name: title
@@ -102,7 +102,7 @@ content:
     filename: "{primary}.md"
     view:
       primary: title
-      fields: [category, type, year, placeholder]
+      fields: [title, category, type, year, placeholder]
       sort: order
     fields:
       - name: title
