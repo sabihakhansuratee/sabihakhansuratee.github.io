@@ -1,0 +1,200 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Media from '../../components/Media.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const caseStudies = (await getCollection('caseStudies', ({ data }) => !data.draft)).sort(
+    (a, b) => a.data.order - b.data.order
+  );
+
+  return caseStudies.map((entry, index) => ({
+    params: { slug: entry.id },
+    props: {
+      entry,
+      prev: index > 0 ? caseStudies[index - 1] : null,
+      next: index < caseStudies.length - 1 ? caseStudies[index + 1] : null,
+    },
+  }));
+}
+
+const { entry, prev, next } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<Layout title={entry.data.title} description={entry.data.summary}>
+  <div class="wrap">
+    <Media
+      path={entry.data.coverImage}
+      alt={`Cover image for ${entry.data.title}`}
+      sizes="100vw"
+      loading="eager"
+      class="hero"
+    />
+  </div>
+
+  <article class="wrap case">
+    <p class="case__meta">
+      {entry.data.client} · {entry.data.role} · <span>{entry.data.year}</span>
+    </p>
+    <h1>{entry.data.title}</h1>
+    <p class="case__summary">{entry.data.summary}</p>
+
+    <div class="case-body">
+      <Content />
+    </div>
+
+    {entry.data.results.length > 0 && (
+      <div class="results">
+        {entry.data.results.map((r) => (
+          <div class="results__item">
+            <p class="results__value">{r.value}</p>
+            <p class="results__label">{r.metric}</p>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <nav class="case-nav" aria-label="More case studies">
+      {prev ? (
+        <a href={`/work/${prev.id}/`} class="case-nav__link case-nav__link--prev">
+          <span class="case-nav__dir">Previous</span>
+          <span class="case-nav__title">{prev.data.title}</span>
+        </a>
+      ) : <span />}
+      {next ? (
+        <a href={`/work/${next.id}/`} class="case-nav__link case-nav__link--next">
+          <span class="case-nav__dir">Next</span>
+          <span class="case-nav__title">{next.data.title}</span>
+        </a>
+      ) : <span />}
+    </nav>
+  </article>
+
+  <style>
+    .hero :global(img) {
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius);
+    }
+
+    .case {
+      padding-block: var(--space-4) var(--space-6);
+    }
+    .case__meta {
+      color: var(--color-ink-soft);
+      font-size: var(--text-sm);
+      margin: 0 0 var(--space-2);
+    }
+    .case__meta span {
+      font-variant-numeric: tabular-nums;
+    }
+    .case h1 {
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      letter-spacing: -0.015em;
+      line-height: var(--leading-tight);
+      max-width: 22ch;
+      margin: 0 0 var(--space-2);
+    }
+    .case__summary {
+      font-size: var(--text-lg);
+      color: var(--color-ink-soft);
+      max-width: var(--measure);
+      margin: 0 0 var(--space-5);
+    }
+
+    .case-body {
+      border-top: 1px solid var(--color-hairline);
+      padding-top: var(--space-4);
+    }
+    .case-body :global(> *) {
+      max-width: var(--measure);
+    }
+    .case-body :global(h2) {
+      font-size: var(--text-lg);
+      font-weight: 600;
+      margin: var(--space-4) 0 var(--space-2);
+    }
+    .case-body :global(p) {
+      margin: 0 0 var(--space-3);
+    }
+    .case-body :global(blockquote) {
+      max-width: var(--measure);
+      margin: var(--space-4) 0;
+      padding-left: var(--space-3);
+      border-left: 2px solid var(--color-accent-soft);
+      font-size: var(--text-lg);
+      color: var(--color-ink);
+      font-style: normal;
+    }
+    .case-body :global(blockquote p) {
+      margin: 0;
+    }
+    .case-body :global(p:has(img)) {
+      max-width: none;
+    }
+    .case-body :global(img) {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: var(--radius);
+      margin: var(--space-2) 0 var(--space-3);
+    }
+    .case-body :global(ul),
+    .case-body :global(ol) {
+      padding-left: 1.2em;
+    }
+
+    .results {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-4) var(--space-5);
+      margin-top: var(--space-5);
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-hairline);
+    }
+    .results__value {
+      font-size: var(--text-xl);
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      margin: 0;
+      color: var(--color-accent);
+    }
+    .results__label {
+      color: var(--color-ink-soft);
+      font-size: var(--text-sm);
+      margin: 4px 0 0;
+      max-width: 22ch;
+    }
+
+    .case-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+      margin-top: var(--space-6);
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-hairline);
+    }
+    .case-nav__link {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .case-nav__link--next {
+      text-align: right;
+      align-items: flex-end;
+    }
+    .case-nav__dir {
+      color: var(--color-ink-soft);
+      font-size: var(--text-sm);
+    }
+    .case-nav__title {
+      font-weight: 600;
+    }
+    .case-nav__link:hover .case-nav__title,
+    .case-nav__link:focus-visible .case-nav__title {
+      color: var(--color-accent);
+    }
+  </style>
+</Layout>

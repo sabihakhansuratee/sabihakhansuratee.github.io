@@ -1,0 +1,102 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Media from '../../components/Media.astro';
+import { getCollection } from 'astro:content';
+
+const caseStudies = (await getCollection('caseStudies', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+---
+
+<Layout title="Work" description="Case studies and project write-ups.">
+  <div class="wrap work-intro">
+    <h1>Work</h1>
+    <p>Design and content work across events and programmes.</p>
+  </div>
+
+  <div class="wrap work-grid">
+    {caseStudies.map((entry) => (
+      <a class="work-card" href={`/work/${entry.id}/`}>
+        <Media
+          path={entry.data.coverImage}
+          alt={`Cover image for ${entry.data.title}`}
+          sizes="(min-width: 700px) 50vw, 100vw"
+        />
+        <div class="work-card__meta">
+          <h2>{entry.data.title}</h2>
+          <p class="work-card__client">{entry.data.client}</p>
+          <p class="work-card__summary">{entry.data.summary}</p>
+          <p class="work-card__year">{entry.data.year}</p>
+        </div>
+      </a>
+    ))}
+  </div>
+
+  <style>
+    .work-intro {
+      margin-bottom: var(--space-5);
+      max-width: var(--measure);
+    }
+    .work-intro h1 {
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      letter-spacing: -0.015em;
+      margin: 0 0 var(--space-2);
+    }
+    .work-intro p {
+      color: var(--color-ink-soft);
+      margin: 0;
+    }
+
+    .work-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-5) var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+    @media (min-width: 760px) {
+      .work-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .work-card {
+      display: block;
+    }
+    .work-card :global(img) {
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius);
+    }
+    .work-card__meta {
+      margin-top: var(--space-2);
+    }
+    .work-card__meta h2 {
+      font-size: var(--text-lg);
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      margin: 0 0 4px;
+    }
+    .work-card:hover .work-card__meta h2,
+    .work-card:focus-visible .work-card__meta h2 {
+      color: var(--color-accent);
+    }
+    .work-card__client {
+      color: var(--color-ink-soft);
+      font-size: var(--text-sm);
+      margin: 0 0 var(--space-1);
+    }
+    .work-card__summary {
+      color: var(--color-ink-soft);
+      font-size: var(--text-sm);
+      margin: 0 0 var(--space-1);
+      max-width: 45ch;
+    }
+    .work-card__year {
+      color: var(--color-ink-soft);
+      font-size: var(--text-sm);
+      font-variant-numeric: tabular-nums;
+      margin: 0;
+    }
+  </style>
+</Layout>

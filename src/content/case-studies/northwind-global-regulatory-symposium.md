@@ -96,18 +96,7 @@ for this edition, and why it's likely to move earlier again next year.
 
 ![Results summary shared with the programme committee](../../assets/media/case-studies/northwind-symposium/inline-5.jpg)
 
-## Results
-
-| Metric | Sample value |
-|---|---|
-| Attendees | 412 |
-| Countries represented | 22 |
-| Registration growth vs. prior year | 31% |
-| Collateral pieces produced | 11 |
-| Combined social impressions | 16,400 |
-| Newsletter subscriber growth | +740 |
-
-None of these numbers are the point on their own — they matter because each ties back
-to a specific decision (the earlier content freeze, the three-audience outreach split,
-the same-day recap rule) that's now written into how the symposium gets planned, not
-just how it got covered this one year.
+None of the numbers on this page are the point on their own — they matter because
+each ties back to a specific decision (the earlier content freeze, the
+three-audience outreach split, the same-day recap rule) that's now written into how
+the symposium gets planned, not just how it got covered this one year.
