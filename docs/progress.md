@@ -28,27 +28,26 @@ Last updated: end of session, 2026-09-12. Read this first when resuming, alongsi
     future `<img>` CSS must pair `width` overrides with `height`, or images stretch).
     Verified with real Playwright screenshots: desktop, mobile width, and the
     lightbox (open/close/arrow-keys/focus-return) all correct.
+  - **Case study index** (`/work`) and **case study detail** (`/work/[slug]`) —
+    done. Results render from the frontmatter `results` field only (the long case
+    study's body originally also had a duplicate markdown results table — removed,
+    since the template renders results uniformly regardless of case study length).
+    Verified with Playwright: desktop, mobile, the no-results edge case (section
+    correctly omitted), and prev/next at both list boundaries. **Awaiting the
+    client's own look — this is a STOP point per PLAN.md** ("this and the gallery
+    are the two templates the client will live with").
 
 ## Next up (still Phase 4)
 
 In the order PLAN.md specifies:
 
-1. **Case study index** (`/work`) — cards: cover image, client, title, year,
-   one-line summary. Pull from the `case-studies` collection (`getCollection`,
-   filter out `draft: true`, sort by `order`).
-2. **Case study page** (`/work/[slug]`) — hero image, metadata block (client ·
-   role · year), the write-up body (rendered Markdown), results treatment
-   (simple spaced "number — label" pairs per the approved design, no boxes/icons),
-   inline images at full width, previous/next navigation at the foot.
-   **STOP after this one too** — per PLAN.md, this and the gallery are "the two
-   templates the client will live with."
-3. **About** (`/about`) — headshot, bio, career history, CV download button.
+1. **About** (`/about`) — headshot, bio, career history, CV download button.
    Content already exists in `src/content/pages/about.md`; this is just the template.
-4. **Contact** (`/contact`) — simple for now (mailto + LinkedIn); the
+2. **Contact** (`/contact`) — simple for now (mailto + LinkedIn); the
    Formspree-alternative decision is Phase 6, not needed yet.
-5. **Home** — build last, once the above exist to pull from. Hero, 2-3 featured
+3. **Home** — build last, once the above exist to pull from. Hero, 2-3 featured
    case studies, a strip of gallery work, one clear call to action.
-6. **404 page.**
+4. **404 page.**
 
 Reuse `Media.astro` for every image. Reuse the token variables in `tokens.css` —
 don't hardcode colours/sizes in a page's `<style>` block.
