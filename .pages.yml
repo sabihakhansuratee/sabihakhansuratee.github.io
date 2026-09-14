@@ -1,0 +1,265 @@
+media:
+  - name: images
+    label: Images
+    input: src/assets/media
+    output: ""
+    extensions: [jpg, jpeg, png, webp, avif]
+  - name: documents
+    label: Documents
+    input: public/documents
+    output: documents
+    extensions: [pdf]
+
+content:
+  - name: case-studies
+    label: My Work
+    type: collection
+    path: src/content/case-studies
+    format: yaml-frontmatter
+    filename: "{primary}.md"
+    view:
+      primary: title
+      fields: [client, year, featured, draft, placeholder]
+      sort: order
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+        description: "The project name as it should appear on the site."
+      - name: client
+        label: Client / partner
+        type: string
+        required: true
+        description: "Who the work was for. If it was entirely internal, with no separate outside partner, just use the programme or event name here."
+      - name: role
+        label: Your role
+        type: string
+        required: true
+        description: "e.g. \"Marketing, design & communications lead\"."
+      - name: year
+        label: Year
+        type: number
+        required: true
+      - name: summary
+        label: Summary
+        type: text
+        required: true
+        description: "One or two sentences. This is what shows on the My Work cards and the home page — keep it short."
+      - name: coverImage
+        label: Cover image
+        type: image
+        required: true
+        options:
+          media: images
+          path: case-studies
+        description: "The image that shows on cards and at the top of the case study page. Landscape (roughly 16:9) works best."
+      - name: tags
+        label: Tags
+        type: string
+        list: true
+        description: "Short labels for the type of work, e.g. \"event collateral\", \"paid social\". Try to reuse wording you've already used on other case studies, so similar work reads consistently."
+      - name: results
+        label: Results
+        type: object
+        list: true
+        description: "Optional. Add one row per number you want to show, e.g. metric \"Attendees\", value \"412\". Leave this empty if there's genuinely nothing measured — that's fine, the section just won't show."
+        fields:
+          - name: metric
+            label: Label
+            type: string
+            description: "What the number measures, e.g. \"Attendees\" or \"Countries represented\"."
+          - name: value
+            label: Value
+            type: string
+            description: "The number itself, e.g. \"412\" or \"22 countries\"."
+      - name: featured
+        label: Featured on home page
+        type: boolean
+        description: "Turn this on for the 2-3 strongest pieces you want visitors to see first, on the home page."
+      - name: order
+        label: Sort order
+        type: number
+        description: "Lower numbers show first in the My Work list. Doesn't need to be sequential — leave gaps (10, 20, 30) so you can slot new work in between later."
+      - name: draft
+        label: Hide from live site
+        type: boolean
+        description: "Turn this on to hide the case study from the live site while you're still working on it, without deleting it."
+      - name: placeholder
+        label: Still placeholder content
+        type: boolean
+        description: "Leave this on until you've replaced the invented content with your own. Turn it off once it's real — this is what the pre-launch checklist counts."
+      - name: body
+        label: Write-up
+        type: rich-text
+        description: "The full write-up. Use ## for a subheading, > for a pull quote, and drag in images wherever you want them — they'll display at full width."
+
+  - name: gallery
+    label: Gallery
+    type: collection
+    path: src/content/gallery
+    format: yaml-frontmatter
+    filename: "{primary}.md"
+    view:
+      primary: title
+      fields: [category, type, year, placeholder]
+      sort: order
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+        description: "A short name for this image or video — shown as alt text and in the lightbox caption line."
+      - name: image
+        label: Image
+        type: image
+        required: true
+        options:
+          media: images
+          path: gallery
+        description: "For a photo or design piece, this is the image itself. For a video, upload a still frame or thumbnail to represent it in the grid."
+      - name: type
+        label: Type
+        type: select
+        options:
+          values:
+            - name: image
+              label: Image
+            - name: video
+              label: Video (embedded from YouTube)
+        description: "Choose \"Video\" only if you're linking a YouTube video below — otherwise leave as Image."
+      - name: youtubeId
+        label: YouTube video ID
+        type: string
+        description: "Only needed if Type is set to Video. This is the short code from the YouTube URL — for youtube.com/watch?v=ABC123, that's \"ABC123\". Not the full link."
+      - name: client
+        label: Client / partner
+        type: string
+        description: "Optional. Who the work was for, if relevant."
+      - name: category
+        label: Project / event
+        type: string
+        description: "Type the exact case study title to group this image with that project on the Gallery page — check the My Work list for the exact spelling. Leave blank, or use something like \"Website & Digital\", for standalone items not tied to one project."
+      - name: year
+        label: Year
+        type: number
+      - name: caption
+        label: Caption
+        type: text
+        description: "A short line shown under the image in the lightbox. Can be left blank."
+      - name: order
+        label: Sort order
+        type: number
+        description: "Lower numbers show first within their group. Leave gaps (10, 20, 30) so you can add items in between later."
+      - name: placeholder
+        label: Still placeholder content
+        type: boolean
+        description: "Leave this on until you've replaced the invented image with your own real work."
+
+  - name: pages
+    label: Prose pages
+    type: collection
+    path: src/content/pages
+    format: yaml-frontmatter
+    filename: "{primary}.md"
+    view:
+      primary: title
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: headshot
+        label: Headshot
+        type: image
+        options:
+          media: images
+          path: about
+        description: "Only used on the About page. A square or portrait photo works best."
+      - name: cvFile
+        label: CV file
+        type: file
+        options:
+          media: documents
+        description: "Only used on the About page. Upload a PDF — this becomes the \"Download CV\" button."
+      - name: career
+        label: Career history
+        type: object
+        list: true
+        description: "Only used on the About page. Add one entry per role, most recent first."
+        fields:
+          - name: role
+            label: Job title
+            type: string
+          - name: org
+            label: Organisation
+            type: string
+          - name: period
+            label: Dates
+            type: string
+            description: "e.g. \"May 2024 – Present\"."
+      - name: placeholder
+        label: Still placeholder content
+        type: boolean
+      - name: body
+        label: Body text
+        type: rich-text
+        description: "The main written content of the page — for About, this is the bio."
+
+  - name: settings
+    label: Site settings
+    type: file
+    path: src/content/settings/site.json
+    format: json
+    fields:
+      - name: name
+        label: Your name
+        type: string
+        required: true
+        description: "As it should appear across the site — in the header, page titles, and search results."
+      - name: title
+        label: Professional title
+        type: string
+        required: true
+        description: "Shown under your name in the site header, e.g. \"Marketing, Design & Communications\"."
+      - name: tagline
+        label: Homepage tagline
+        type: text
+        required: true
+        description: "The large headline on the home page. One confident sentence about what you do."
+      - name: email
+        label: Contact email
+        type: string
+        required: true
+        description: "Used for the \"mailto\" links across the site — the envelope icon and the Contact page."
+      - name: social
+        label: Social links
+        type: object
+        fields:
+          - name: linkedin
+            label: LinkedIn URL
+            type: string
+            description: "Your full LinkedIn profile URL, e.g. https://linkedin.com/in/yourname/."
+      - name: cvFile
+        label: CV file path
+        type: string
+        description: "Set automatically when you upload a CV on the About page — you shouldn't normally need to edit this directly."
+      - name: seo
+        label: Search & sharing
+        type: object
+        fields:
+          - name: defaultDescription
+            label: Default description
+            type: text
+            description: "Used when a specific page doesn't have its own description — shown in search results and social link previews."
+          - name: ogImage
+            label: Default share image
+            type: image
+            options:
+              media: images
+              path: site
+            description: "The image shown when the site is shared on LinkedIn or other social platforms, if a page doesn't have its own."
+      - name: launched
+        label: Site is launched
+        type: boolean
+        description: "Leave this OFF until you're ready for the world to see the real site. While it's off, search engines are told to ignore the site and a banner reminds anyone visiting that it's not live yet."

@@ -84,6 +84,17 @@ happens at Phase 8 handover.
   a different property from `width` and always wins over it when they'd
   conflict, so overriding `width` alone doesn't stop `max-width: 100%` from
   still capping the result.
+- **Gallery `category` is a plain text field in the CMS, not a select list**,
+  despite PLAN.md's general preference for select lists over free text on
+  category-like fields. Reason: category values here are project/event titles
+  (an open-ended, ever-growing set as the client adds real work), not a fixed
+  taxonomy — a hardcoded select list would need editing by a developer every
+  time she starts a new project, defeating the point of the CMS. A `reference`
+  field pointing at the case-studies collection would be the ideal fix (no
+  typos possible, always in sync), but would require reworking the Zod schema
+  and the gallery/home page grouping logic to resolve a reference instead of
+  a plain string — worth doing later if mis-typed categories become a real
+  problem, not before.
 - **This machine's `screencapture` can't take screenshots from this terminal**
   (macOS Screen Recording permission isn't granted to it) — visual QA needs a real
   browser. Working method: `npm install --no-save playwright` (temporary — restore
