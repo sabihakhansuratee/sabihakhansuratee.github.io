@@ -67,6 +67,23 @@ happens at Phase 8 handover.
   axis, so overriding only `width` leaves `height` pinned to the attribute's literal
   pixel value and the image visibly stretches. Fixed once at the root in
   `global.css`'s base `img, video` rule, but keep pairing them in any new CSS anyway.
+- **For a "fixed height, variable width" row of images** (e.g. a horizontal
+  scroll strip where every item shares one exact height and keeps its own
+  aspect ratio) — don't use `width: auto; height: 100%` inside a flex row and
+  trust the browser to infer width from the image's real aspect ratio. In
+  this project that combination (flexbox + responsive `sizes` + `aspect-ratio`)
+  did not reliably size correctly — confirmed with Playwright measurements,
+  not just suspected. Instead, `Media.astro` accepts a `height` prop for
+  exactly this case: it computes the real pixel width server-side from the
+  source's actual aspect ratio and sets both dimensions via **inline style**
+  (not just HTML attributes) — inline style is the one thing guaranteed to
+  beat every external stylesheet rule, including this project's own global
+  `img { height: auto; max-width: 100% }` reset, either of which would
+  otherwise silently override a plain width/height attribute and resize the
+  image wrong. `max-width: none` has to be set inline too, separately — it's
+  a different property from `width` and always wins over it when they'd
+  conflict, so overriding `width` alone doesn't stop `max-width: 100%` from
+  still capping the result.
 - **This machine's `screencapture` can't take screenshots from this terminal**
   (macOS Screen Recording permission isn't granted to it) — visual QA needs a real
   browser. Working method: `npm install --no-save playwright` (temporary — restore
