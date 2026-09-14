@@ -37,17 +37,16 @@ Last updated: end of session, 2026-09-12. Read this first when resuming, alongsi
     client's own look — this is a STOP point per PLAN.md** ("this and the gallery
     are the two templates the client will live with").
 
+  - **About** (`/about`) and **Contact** (`/contact`) — done, verified with
+    Playwright screenshots (desktop + mobile), CV download link confirmed resolving.
+
 ## Next up (still Phase 4)
 
 In the order PLAN.md specifies:
 
-1. **About** (`/about`) — headshot, bio, career history, CV download button.
-   Content already exists in `src/content/pages/about.md`; this is just the template.
-2. **Contact** (`/contact`) — simple for now (mailto + LinkedIn); the
-   Formspree-alternative decision is Phase 6, not needed yet.
-3. **Home** — build last, once the above exist to pull from. Hero, 2-3 featured
+1. **Home** — build last, now that the above exist to pull from. Hero, 2-3 featured
    case studies, a strip of gallery work, one clear call to action.
-4. **404 page.**
+2. **404 page.**
 
 Reuse `Media.astro` for every image. Reuse the token variables in `tokens.css` —
 don't hardcode colours/sizes in a page's `<style>` block.
