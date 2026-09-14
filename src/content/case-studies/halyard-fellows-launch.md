@@ -4,18 +4,25 @@ client: (CoRE) Centre of Regulatory Excellence, Duke-NUS and Ministry of Health,
   Singapore
 role: Design, communications and conference management
 year: 2024
-summary: A compact collateral set — flyer, certificate, and social announcement
-  — for the launch cohort of an internal fellows programme.
+summary: Oversaw all collateral and event experience for CoRE 2024, managing
+  every touchpoint from initial outreach to on-site delivery. Scope included the
+  full pre-event campaign (EDM, webpage, flyers, registration, and programme
+  updates), production of speaker decks and event video, and coordination with
+  speakers on content and scheduling. As the conference also marked the
+  organisation's 10th anniversary, responsibilities extended to vendor
+  management, catering, the anniversary dinner, and VIP invitations. Maintained
+  a consistent visual identity and message across all digital, print, and
+  on-site materials, including name tags, banners, signage, and brochures.
 coverImage: /case-studies/halyard-fellows/cover.jpg
 tags:
   - event collateral
-  - internal programme
+  - event programme
   - social announcement
 results:
   - metric: Attendees
     value: 200 attendees across 10 countries
   - metric: Committee members
-    value: From top universities
+    value: From top universities globally
 featured: false
 order: 30
 draft: false
