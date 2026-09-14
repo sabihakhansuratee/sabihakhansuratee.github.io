@@ -1,0 +1,147 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Media from '../components/Media.astro';
+import { getEntry, render } from 'astro:content';
+
+const entry = await getEntry('pages', 'about');
+if (!entry) throw new Error('Missing src/content/pages/about.md');
+const { Content } = await render(entry);
+---
+
+<Layout title="About" description="About Sabiha Khan.">
+  <div class="wrap about">
+    <div class="about__intro">
+      {entry.data.headshot && (
+        <Media
+          path={entry.data.headshot}
+          alt="Portrait of Sabiha Khan"
+          sizes="(min-width: 760px) 320px, 60vw"
+          loading="eager"
+          class="about__headshot"
+        />
+      )}
+      <div class="about__bio">
+        <h1>About</h1>
+        <div class="about__body">
+          <Content />
+        </div>
+        {entry.data.cvFile && (
+          <a class="about__cv" href={`/${entry.data.cvFile}`} download>
+            Download CV
+          </a>
+        )}
+      </div>
+    </div>
+
+    {entry.data.career && entry.data.career.length > 0 && (
+      <section class="about__career">
+        <h2>Career</h2>
+        <ul>
+          {entry.data.career.map((role) => (
+            <li>
+              <div>
+                <p class="about__role">{role.role}</p>
+                <p class="about__org">{role.org}</p>
+              </div>
+              <p class="about__period">{role.period}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </div>
+
+  <style>
+    .about {
+      padding-block: var(--space-4) var(--space-6);
+    }
+    .about__intro {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+    @media (min-width: 760px) {
+      .about__intro {
+        grid-template-columns: 280px 1fr;
+        gap: var(--space-5);
+        align-items: start;
+      }
+    }
+    .about__intro :global(.about__headshot) {
+      width: 100%;
+      max-width: 320px;
+      height: auto;
+      border-radius: var(--radius);
+    }
+    .about__bio h1 {
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      letter-spacing: -0.015em;
+      margin: 0 0 var(--space-3);
+    }
+    .about__body {
+      max-width: var(--measure);
+    }
+    .about__body :global(p) {
+      margin: 0 0 var(--space-3);
+      color: var(--color-ink-soft);
+    }
+    .about__cv {
+      display: inline-block;
+      margin-top: var(--space-2);
+      padding: 0.6em 1.2em;
+      border: 1px solid var(--color-ink);
+      border-radius: var(--radius);
+      font-size: var(--text-sm);
+      font-weight: 500;
+    }
+    .about__cv:hover,
+    .about__cv:focus-visible {
+      background: var(--color-ink);
+      color: var(--color-paper);
+    }
+
+    .about__career {
+      border-top: 1px solid var(--color-hairline);
+      padding-top: var(--space-4);
+    }
+    .about__career h2 {
+      font-size: var(--text-lg);
+      font-weight: 600;
+      margin: 0 0 var(--space-3);
+    }
+    .about__career ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .about__career li {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: var(--space-3);
+      padding-block: var(--space-2);
+      border-bottom: 1px solid var(--color-hairline);
+    }
+    .about__career li:first-child {
+      padding-top: 0;
+    }
+    .about__role {
+      font-weight: 600;
+      margin: 0 0 2px;
+    }
+    .about__org {
+      color: var(--color-ink-soft);
+      font-size: var(--text-sm);
+      margin: 0;
+    }
+    .about__period {
+      color: var(--color-ink-soft);
+      font-size: var(--text-sm);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      margin: 0;
+    }
+  </style>
+</Layout>
