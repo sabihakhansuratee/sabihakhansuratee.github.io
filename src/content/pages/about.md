@@ -1,20 +1,19 @@
 ---
-title: "About"
-headshot: "about/headshot.jpg"
-cvFile: "documents/cv-placeholder.pdf"
+title: About
+headshot: /IMG_0139.jpeg
+cvFile: documents/cv-placeholder.pdf
 career:
-  - role: "Senior Executive, Marketing Communications & Stakeholder Engagement"
-    org: "Duke-NUS Medical School, Centre of Regulatory Excellence (CoRE)"
-    period: "May 2024 – Present"
-  - role: "Social Media & Content Marketing Executive, Brand & Communications"
-    org: "Fujifilm Business Innovation Singapore"
-    period: "Jan 2023 – Oct 2023"
-  - role: "Content / Learning Design Executive, Asynchronous Learning Design"
-    org: "Singapore Polytechnic"
-    period: "Feb 2021 – Jan 2023"
+  - role: Senior Executive, Marketing Communications & Stakeholder Engagement
+    org: Duke-NUS Medical School, Centre of Regulatory Excellence (CoRE)
+    period: May 2024 – Present
+  - role: Social Media & Content Marketing Executive, Brand & Communications
+    org: Fujifilm Business Innovation Singapore
+    period: Jan 2023 – Oct 2023
+  - role: Content / Learning Design Executive, Asynchronous Learning Design
+    org: Singapore Polytechnic
+    period: Feb 2021 – Jan 2023
 placeholder: false
 ---
-
 I'm a marketing communications professional based in Singapore, with over five years'
 experience across education, healthcare, and B2B technology. I currently lead
 marketing communications for the Centre of Regulatory Excellence (CoRE) at Duke-NUS
